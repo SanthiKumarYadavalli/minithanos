@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from models.web_model import get_xpath
+from gemini.web_model import get_xpath, get_summarize_text
 from selenium.webdriver.common.keys import Keys
 
 key_map = {
@@ -85,8 +85,14 @@ class BrowserCLI:
             "press": self.press_key,
             "type": self.type_text,
             "click": self.click_element,
-            "help": self.show_help
+            "help": self.show_help,
+            "summary": self.summarize_link,
         }
+
+    def summarize_link(self):
+        link = self.driver.current_url
+        print(get_summarize_text(link))
+        return
 
     def open_website(self, url):
         self.driver.get(url)
@@ -191,6 +197,7 @@ class BrowserCLI:
               "  switch <index>      - Switch to a tab (1-based index)\n"
               "  press <key>         - Press a keyboard key\n"
               "  scroll <up/down> <pixels> - Scroll up or down\n"
+              "  summary             - Summarize the current page\n"
               "  close               - Close the current tab\n"
               "  exit                - Close browser and exit\n")
 
@@ -206,11 +213,12 @@ class BrowserCLI:
 
             if action in self.commands:
                 try:
-                    self.commands[action](*args)
-                except TypeError:
-                    print(f"Incorrect usage. Type 'help' for command details.")
-            else:
-                print("Unknown command! Type 'help' for available commands.")
+                    if args:
+                        self.commands[action](*args)
+                    else:
+                        self.commands[action]()
+                except Exception as e:
+                    print(e)
 
 
 if __name__ == "__main__":
