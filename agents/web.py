@@ -3,8 +3,14 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from gemini.web_model import get_xpath, get_summarize_text
 from selenium.webdriver.common.keys import Keys
+from time import sleep
+from urllib.parse import urljoin
+import pyautogui as pg
+import re
+
 
 key_map = {
+
     "enter": Keys.ENTER,
     "tab": Keys.TAB,
     "backspace": Keys.BACKSPACE,
@@ -87,12 +93,13 @@ class BrowserCLI:
             "click": self.click_element,
             "help": self.show_help,
             "summary": self.summarize_link,
+            "search": self.web_search
         }
 
-    def summarize_link(self):
-        link = self.driver.current_url
-        print(get_summarize_text(link))
-        return
+    def summarize_link(self) -> str:
+        response = get_summarize_text(self.get_body_html())
+        print(response)
+        return response
 
     def open_website(self, url):
         self.driver.get(url)
@@ -124,11 +131,24 @@ class BrowserCLI:
         self.driver.execute_script(f"window.scrollBy(0, {scroll_value});")
         print(f"Scrolled {direction} by {amount} pixels")
 
+    def web_search(self, *text):
+        try:
+            sleep(3)
+            text = " ".join(text)
+            pg.hotkey("ctrl", "k")
+            pg.write(text)
+            sleep(3)
+            pg.press("enter")
+            print(f"Typed '{text}'")
+        except Exception as e:
+            print(f"Error typing into element: {e}")
+
     def type_text(self, *text):
         try:
             element = self.driver.find_element("xpath", self.xpaths[-1])
             element.clear()
-            element.send_keys(" ".join(text))
+            for ch in text:
+                element.send_keys(ch)
             print(f"Typed '{text}' into element: {element}")
         except Exception as e:
             print(f"Error typing into element: {e}")
@@ -152,9 +172,27 @@ class BrowserCLI:
             xpath = response["xpath"]
             self.xpaths.append(xpath)
             print(f"Extracted XPath: {xpath}")
-            element = self.driver.find_element("xpath", xpath)
-            element.click()
-            print(f"Clicked element: {element}")
+
+            if "href" in xpath:
+                match = re.search(r"@href='([^']+)'", xpath)
+                if match:
+                    link = match.group(1)
+                    # Ensure full URL
+                    if link.startswith("/"):
+                        base_url = self.driver.current_url.split(
+                            "/", 3)[:3]  # Extract domain from current URL
+                        base_url = "/".join(base_url)  # Join it back
+                        # Convert to absolute URL
+                        link = urljoin(base_url, link)
+                        print(link, base_url)
+                    self.open_website(link)
+                else:
+                    print("No href found in XPath.")
+            else:
+                element = self.driver.find_element("xpath", xpath)
+                element.click()
+
+            print(f"Clicked element: {xpath}")
         except Exception as e:
             print(f"Error clicking element: {e}")
 
@@ -191,6 +229,7 @@ class BrowserCLI:
     def show_help(self):
         print("\nCommands:\n"
               "  open <url>          - Open a website in the current tab\n"
+              "  search query        - search in omnibox\n"
               "  newtab <url>        - Open a new tab with a website\n"
               "  click element  - Click an element\n"
               "  type <text> - Type text into an input field\n"
