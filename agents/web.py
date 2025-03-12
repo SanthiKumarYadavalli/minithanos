@@ -177,12 +177,9 @@ class BrowserCLI:
                 match = re.search(r"@href='([^']+)'", xpath)
                 if match:
                     link = match.group(1)
-                    # Ensure full URL
                     if link.startswith("/"):
-                        base_url = self.driver.current_url.split(
-                            "/", 3)[:3]  # Extract domain from current URL
-                        base_url = "/".join(base_url)  # Join it back
-                        # Convert to absolute URL
+                        base_url = self.driver.current_url.split("/", 3)[:3]
+                        base_url = "/".join(base_url)
                         link = urljoin(base_url, link)
                         print(link, base_url)
                     self.open_website(link)
