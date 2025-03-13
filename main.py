@@ -4,6 +4,8 @@ from RealtimeSTT import AudioToTextRecorder
 import elevenlabs
 import pyttsx3
 from agents.god import do
+from RealtimeSTT import AudioToTextRecorder
+
 
 load_dotenv()
 
