@@ -10,6 +10,8 @@ from RealtimeSTT import AudioToTextRecorder
 load_dotenv()
 
 
+
+
 def process_input(text):
     if "jarvis" in text.lower():
         print(text)
