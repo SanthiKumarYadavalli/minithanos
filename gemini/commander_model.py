@@ -1,11 +1,12 @@
-from .client import client
+from gemini.client import client
 from google.genai import types
+import os
 
 
 def generate(prompt):
+    file_path = os.path.join("..", "files.txt")  # very important to use os.path.join
     files = [
-        # Make the file available in local system working directory
-        client.files.upload(file="files.txt"),
+        client.files.upload(file=file_path),
     ]
     model = "gemini-2.0-flash-thinking-exp-01-21"
     contents = [
