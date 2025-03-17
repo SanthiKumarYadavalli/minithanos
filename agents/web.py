@@ -10,7 +10,6 @@ import re
 
 
 key_map = {
-
     "enter": Keys.ENTER,
     "tab": Keys.TAB,
     "backspace": Keys.BACKSPACE,
