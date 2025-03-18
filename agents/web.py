@@ -69,6 +69,219 @@ key_map = {
     "pause": Keys.PAUSE,
 }
 
+driver = None
+xpaths = []
+
+
+def initialize_webdriver() -> dict:
+    """
+    Initializes the Chrome Webdriver.
+
+    This function checks if a Webdriver instance exists. If not, it initializes 
+    a new Chrome Webdriver with maximized window settings.
+
+    Returns:
+        dict: A dictionary containing the result of the operation.
+    """
+    if driver is None:
+        options = webdriver.ChromeOptions()
+        options.add_argument("--start-maximized")
+        driver = webdriver.Chrome(service=Service(
+            ChromeDriverManager().install()), options=options)
+    return {"result": "Done"}
+
+
+def open_website(url: str) -> dict:
+    """
+    Opens a given URL in the web browser using the initialized WebDriver.
+
+    Args:
+        url (str): The URL of the website to open.
+
+    Returns:
+        dict: A dictionary indicating the operation result.
+    """
+    driver.get(url)
+    print(f"Opened: {url}")
+    return {"result": "Done"}
+
+
+def new_tab(url: str) -> dict:
+    """
+    Opens a new tab in the web browser and navigates to the given URL.
+
+    Args:
+        url (str): The URL to open in the new tab.
+
+    Returns:
+        dict: A dictionary indicating the operation result.
+    """
+    driver.execute_script("window.open('');")
+    driver.switch_to.window(driver.window_handles[-1])
+    driver.get(url)
+    print(f"Opened new tab: {url}")
+    return {"result": "Done"}
+
+
+def switch_tab(index: int) -> dict:
+    """
+    Switches to a specific tab in the web browser.
+
+    Args:
+        index (int): The tab index (1-based) to switch to.
+
+    Returns:
+        dict: A dictionary indicating the operation result.
+    """
+    try:
+        driver.switch_to.window(driver.window_handles[index - 1])
+        print(f"Switched to tab {index}: {driver.current_url}")
+    except (IndexError, ValueError):
+        print(f"Invalid tab index: {index}")
+
+    return {"result": "Done"}
+
+
+def close_tab() -> dict:
+    """
+    Closes the current browser tab. If other tabs remain open, switches to the last one.
+
+    Returns:
+        dict: A dictionary indicating the operation result.
+    """
+    driver.close()
+    if driver.window_handles:
+        driver.switch_to.window(driver.window_handles[-1])
+    print("Closed current tab")
+
+    return {"result": "Done"}
+
+
+def scroll(direction: str, amount: int) -> dict:
+    """
+    Scrolls the webpage in the specified direction by a given amount.
+
+    Args:
+        direction (str): The direction to scroll ("up" or "down").
+        amount (int): The number of pixels to scroll.
+
+    Returns:
+        dict: A dictionary indicating the operation result.
+    """
+    scroll_value = amount if direction == "down" else -amount
+    driver.execute_script(f"window.scrollBy(0, {scroll_value});")
+    print(f"Scrolled {direction} by {amount} pixels")
+
+    return {"result": "Done"}
+
+
+def web_search(search_query: str) -> dict:
+    """
+    Performs a web search by simulating keyboard input.
+
+    Args:
+        search_query (str): The search query.
+
+    Returns:
+        dict: A dictionary indicating the operation result.
+    """
+    try:
+        sleep(3)
+        pg.hotkey("ctrl", "k")
+        pg.write(search_query)
+        sleep(3)
+        pg.press("enter")
+        print(f"Typed '{search_query}'")
+    except Exception as e:
+        print(f"Error typing into element: {e}")
+
+    return {"result": "Done"}
+
+
+def type_text(text: str) -> dict:
+    """
+    Types the given text into the last selected input field.
+
+    Args:
+        text (str): The text to type.
+
+    Returns:
+        dict: A dictionary indicating the operation result.
+    """
+    try:
+        element = driver.find_element("xpath", xpaths[-1])
+        element.clear()
+        for ch in text:
+            element.send_keys(ch)
+        print(f"Typed '{text}' into element: {element}")
+    except Exception as e:
+        print(f"Error typing into element: {e}")
+
+    return {"result": "Done"}
+
+
+def click_element(description: str) -> dict:
+    """
+    Finds and clicks an element on the webpage using its description.
+
+    Args:
+        description (str): The description of the element.
+
+    Returns:
+        dict: A dictionary indicating the operation result.
+    """
+    try:
+        response = get_xpath(get_body_html(), description)
+        xpath = response["xpath"]
+        xpaths.append(xpath)
+        print(f"Extracted XPath: {xpath}")
+
+        if "href" in xpath:
+            match = re.search(r"@href='([^']+)'", xpath)
+            if match:
+                link = match.group(1)
+                if link.startswith("/"):
+                    base_url = "/".join(driver.current_url.split("/", 3)[:3])
+                    link = urljoin(base_url, link)
+                    print(link, base_url)
+                open_website(link)
+            else:
+                print("No href found in XPath.")
+        else:
+            element_obj = driver.find_element("xpath", xpath)
+            element_obj.click()
+
+        print(f"Clicked element: {description}")
+    except Exception as e:
+        print(f"Error clicking element: {e}")
+
+    return {"result": "Done"}
+
+
+def exit_webdriver() -> dict:
+    """
+    Closes the browser.
+
+    Returns:
+        dict: A dictionary indicating the operation result.
+    """
+    try:
+        driver.quit() 
+    except Exception as e:
+        print(f"Error closing browser: {e}")
+
+    return {"result": "Done"}
+
+
+
+
+
+def get_body_html(self) -> str:
+    """Returns the raw HTML of the page starting from the <body> tag."""
+    body_element = self.driver.find_element(
+        "tag name", "body")
+    return body_element.get_attribute("outerHTML")
+
 
 class BrowserCLI:
     def __init__(self):
