@@ -51,3 +51,7 @@ def update_files_list():
         *(x for file in skip_files for x in ("-not", "-path", f"\"{file}\"")), 
         ">", "files.txt"
     ], shell=True)
+
+
+def take_screenshot():
+    pg.screenshot("screenshot.png")

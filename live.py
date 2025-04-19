@@ -1,7 +1,5 @@
-import asyncio
 from google import genai
 import pyaudio
-from RealtimeSTT import AudioToTextRecorder
 from google.genai import types
 from tools import FUNCTIONS
 from dotenv import load_dotenv
@@ -9,6 +7,7 @@ import os
 
 load_dotenv()
 
+name = "Charlie"
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"),
                       http_options={'api_version': 'v1alpha'})
 model = "gemini-2.0-flash-exp"
@@ -18,7 +17,7 @@ config = types.LiveConnectConfig(
     system_instruction=types.Content(
         parts=[
             types.Part(
-                text="You are a helpful assistant 'Newton' and answer in a friendly tone. Don't give long responses. Respond like if you were talking to a friend. Give only SHORT responses.",
+                text=f"You are a Jarvis-like assistant '{name}'. You can do anything the user asks you to do with the tools you have. answer in a friendly tone. Don't give long responses. Give only SHORT responses.",
             )
         ]
     ),
@@ -54,37 +53,43 @@ async def handle_tool_call(session, tool_call):
     await session.send(input=tool_response)
     
 
-async def main():
+prev_prompt = ""
+awake = False
+
+
+async def audio_mode(recorder):
+    global prev_prompt, awake
     while True:
         print("SESSION STARTED!")
         async with client.aio.live.connect(model=model, config=config) as session:
             while True:
+                if prev_prompt:
+                    message = prev_prompt
+                    prev_prompt = ""
+                else:
+                    message = recorder.text()
                 try:
                     stream = p.open(format=p.get_format_from_width(2),
                                     channels=1,
                                     rate=24000,
                                     output=True)
-
-                    message = recorder.text()
-                    print(message)
+                    # print(message)
                     recorder.stop()
-                    if 'newton' in message.lower():
+                    if name.lower() in message.lower() or awake:
+                        awake = True
                         await session.send(input=message, end_of_turn=True)
                         async for idx, response in async_enumerate(session.receive()):
+                            if response.text is not None:
+                                print(response.text, end="")
                             if response.tool_call is not None:
                                 await handle_tool_call(session, response.tool_call)
-                            if response.data is not None:
+                            if response.data is not None: 
                                 stream.write(response.data)
+                        if 'bye' in message.lower():
+                            awake = False
                     stream.close()
                 except Exception as e:
+                    prev_prompt = message
                     print(e)
                     break
-
-if __name__ == "__main__":
-    recorder = AudioToTextRecorder(language="en", spinner=True, ensure_sentence_ends_with_period=True)
-    while True:
-        try:
-            asyncio.run(main())
-        except Exception as e:
-            print(type(e), e)
         

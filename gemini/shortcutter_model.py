@@ -4,7 +4,7 @@ from .client import client
 
 
 def generate(prompt):
-    model = "gemini-2.0-flash"
+    model = "gemini-2.0-flash-lite"
     contents = [
         types.Content(
             role="user",
