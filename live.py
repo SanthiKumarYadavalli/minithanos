@@ -4,6 +4,8 @@ from google.genai import types
 from tools import FUNCTIONS
 from dotenv import load_dotenv
 import os
+import asyncio
+from RealtimeSTT import AudioToTextRecorder
 
 load_dotenv()
 
@@ -92,4 +94,13 @@ async def audio_mode(recorder):
                     prev_prompt = message
                     print(e)
                     break
-        
+
+
+if __name__ == "__main__":
+    recorder = AudioToTextRecorder(language="en", spinner=True, ensure_sentence_ends_with_period=True)
+    while True:
+        try:
+            asyncio.run(audio_mode(recorder))
+            # text_mode()
+        except Exception as e:
+            print(type(e), e)

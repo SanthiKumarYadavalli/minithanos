@@ -3,8 +3,13 @@ import pyperclip
 import subprocess
 
 
-def write_code(text):
-    for line in text.split("\n"):
+def write_code(code: str) -> dict:
+    """
+    types the given code into the active text field
+    Args:
+        code (str): the code to type
+    """
+    for line in code.split("\n"):
         pg.hotkey("home")
         pyperclip.copy(line)
         pg.hotkey("ctrl", "v")
@@ -18,6 +23,7 @@ def write_text(text: str) -> dict:
     Args:
         text (str): the text to type
     """
+    print("WRITER called!")
     pyperclip.copy(text)
     pg.hotkey("ctrl", "v")
     pg.press("enter")
@@ -51,6 +57,19 @@ def update_files_list():
         *(x for file in skip_files for x in ("-not", "-path", f"\"{file}\"")), 
         ">", "files.txt"
     ], shell=True)
+
+
+def get_files_list():
+    result = subprocess.run([
+        "cat",
+        "files.txt"
+    ], shell=True, capture_output=True, text=True)
+    return result.stdout
+
+
+def run_command(command):
+    output = subprocess.run([r"C:\Program Files\Git\bin\bash.exe", "-c", command], shell=True, capture_output=True)
+    return {"output": output.stdout.decode("utf-8"), "error": output.stderr.decode("utf-8")}
 
 
 def take_screenshot():

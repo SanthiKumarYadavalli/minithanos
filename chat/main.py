@@ -1,6 +1,9 @@
 import sys
 import random
 import time
+from agents.god import do
+# Replace keyboard import with pynput
+from pynput import keyboard
 
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QLineEdit,
@@ -173,6 +176,8 @@ class ChatWindow(QWidget):
 
         self.init_ui()
         self.create_floating_icon()
+        # Add hotkey setup
+        self.setup_hotkey()
 
         # Center window initially
         self.center_on_screen()
@@ -442,14 +447,7 @@ class ChatWindow(QWidget):
 
     def ai_response(self, user_text):
         self.stop_typing_indicator()
-        responses = [
-            f"You said: '{user_text}'. That's interesting!",
-            "I'm still under development, but I understand you mentioned: " + user_text,
-            "Let me think about that...",
-            "Processing your input: " + user_text,
-            "Could you tell me more about " + user_text.split()[-1] + "?"
-        ]
-        response = random.choice(responses)
+        response = self.generate_ai_response(user_text)
         self.add_message(response, is_user=False)
 
         # Make sure the input field has focus after AI responds
@@ -501,6 +499,33 @@ class ChatWindow(QWidget):
 
             # Set focus to input field after restoring
             QTimer.singleShot(100, self.input_field.setFocus)
+
+    # --- Method to toggle visibility via shortcut ---
+    def toggle_visibility_shortcut(self):
+        # Use QTimer to ensure GUI updates happen in the main thread
+        QTimer.singleShot(0, self._perform_toggle)
+
+    def _perform_toggle(self):
+        if self.isVisible() and not self.is_minimized_to_icon:
+            self.toggle_minimize()
+        elif not self.isVisible() and self.is_minimized_to_icon:
+            self.toggle_restore()
+        # Optional: Handle case where window is hidden but not minimized (e.g., closed)
+        # else:
+        #     print("Window state not handled by toggle.")
+
+    # --- Setup global hotkey ---
+    def setup_hotkey(self):
+        try:
+            # Define the hotkey (e.g., Ctrl+Alt+C)
+            self.hotkey_listener = keyboard.GlobalHotKeys({
+                '<ctrl>+<alt>+c': self.toggle_visibility_shortcut
+            })
+            self.hotkey_listener.start()
+            print("Hotkey 'Ctrl+Alt+C' registered successfully.")
+        except Exception as e:
+            print(f"Failed to register hotkey: {e}")
+            print("Try running the script with administrator privileges.")
 
     # --- Custom resizing implementation for edge dragging ---
     def get_resize_edge(self, pos):
@@ -670,6 +695,14 @@ class ChatWindow(QWidget):
         event.accept()
 
     def closeEvent(self, event):
+        # Stop the hotkey listener on close
+        try:
+            if hasattr(self, 'hotkey_listener'):
+                self.hotkey_listener.stop()
+                print("Hotkey 'Ctrl+Alt+C' unregistered.")
+        except Exception as e:
+            print(f"Error stopping hotkey listener: {e}")
+
         if self.floating_icon:
             self.floating_icon.close()
         super().closeEvent(event)
@@ -684,15 +717,5 @@ class ChatWindow(QWidget):
         super().showEvent(event)
         QTimer.singleShot(100, self.input_field.setFocus)
 
-
-# --- Main Application Execution ---
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-
-    # Set application-wide font
-    app_font = QFont("Segoe UI", 10)
-    app.setFont(app_font)
-
-    chat_window = ChatWindow()
-    chat_window.show()
-    sys.exit(app.exec_())
+    def generate_ai_response(self, prompt):
+        return do(prompt)
