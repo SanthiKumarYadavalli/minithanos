@@ -1,7 +1,7 @@
 from google import genai
 import pyaudio
 from google.genai import types
-from tools import FUNCTIONS
+from all_tools import FUNCTIONS
 from dotenv import load_dotenv
 import os
 import asyncio

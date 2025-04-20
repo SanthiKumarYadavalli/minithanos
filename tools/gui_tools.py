@@ -1,7 +1,6 @@
 import pyautogui as pg
 import datetime
 import os
-import subprocess
 
 
 def press_key(key: str) -> dict:
@@ -78,29 +77,3 @@ def press_shortcut(keys: str) -> dict:
     pg.hotkey(*keys.split())
     return {"result": "done"}
 
-
-def play_song(song_name: str) -> dict:
-    """
-    Plays a song using Spotify by simulating a search and play action.
-
-    Args:
-        song_name: The name of the song to play.
-
-    Returns:
-        A dictionary with the result of the action.
-    """
-    try:
-        print(f"Action: Searching and playing song: '{song_name}'")
-        # Simulate opening Spotify and searching for the song
-        subprocess.run("spotify")
-        pg.sleep(2)  # Wait for Spotify to open
-        pg.hotkey('ctrl', 'l')  # Focus search bar
-        pg.write(song_name)  # Type the song name
-        pg.press("enter")  # Search for the song
-        pg.sleep(1)  # Wait for search results
-        pg.press("enter")  # Play the first result
-        print(f"Action completed: Playing song '{song_name}'")
-        return {"result": f"Playing song: {song_name}"}
-    except Exception as e:
-        print(f"Error playing song '{song_name}': {e}")
-        return {"error": f"Error playing song '{song_name}': {e}"}

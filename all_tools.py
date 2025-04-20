@@ -1,7 +1,8 @@
-from tools.gui_tools import press_key, close_tab, close_window, take_screenshot, press_shortcut, play_song
+from tools.gui_tools import press_key, close_tab, close_window, take_screenshot, press_shortcut
 from tools.web_tools import open_url, search_web
 from tools.clipboard_tools import get_clipboard_text, set_clipboard_text
 from tools.utility_tools import get_current_datetime, open_apps, open_file, open_folder, execute_command
+from tools.music_tools import play_song, control_music
 from agents.watcher import look_at_my_screen
 from utils import write_text, write_code
 
@@ -23,5 +24,6 @@ FUNCTIONS = {
     "play_song": play_song,                   
     "write_text": write_text,
     "write_code": write_code,             
-    "look_at_my_screen": look_at_my_screen      
+    "look_at_my_screen": look_at_my_screen,
+    "control_music": control_music,    
 }
