@@ -112,8 +112,7 @@ class FloatingIcon(QWidget):
         self.label.setGeometry(0, 0, ICON_SIZE, ICON_SIZE)
         self.label.setStyleSheet(f"""
             background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1,
-                                            #064e7c);
-                                            stop:0 {ACCENT_COLOR}, stop:1
+                                            stop:0 {ACCENT_COLOR}, stop:1 #064e7c);
             color: {TEXT_COLOR};
             border-radius: {ICON_SIZE // 2}px; /* Make it circular */
         """)
@@ -280,40 +279,38 @@ class ChatWindow(QWidget):
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setStyleSheet(f"""
             QScrollArea {{
-                border: none;
+                border: none; 
                 background-color: {DARK_BACKGROUND};
             }}
             QScrollBar:vertical {{
-                border: none;
-                background: {DARK_WIDGET_BACKGROUND};
+                border: none; 
+                background: {DARK_WIDGET_BACKGROUND}; 
                 width: 8px;
-                margin: 0px 0px 0px 0px;
+                margin: 0px 0px 0px 0px; 
                 border-radius: 4px;
             }}
             QScrollBar::handle:vertical {{
-                background: #555555;
-                min-height: 20px;
+                background: #555555; 
+                min-height: 20px; 
                 border-radius: 4px;
             }}
             QScrollBar::handle:vertical:hover {{
                 background: #777777;
             }}
             QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
-                border: none;
-                background: none;
+                border: none; 
+                background: none; 
                 height: 0px;
             }}
-            QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {{
-                background: none;
+            QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {{ 
+                background: none; 
             }}
         """)
         self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         self.chat_container = QWidget()
-        # Ensure chat container has dark background
-        self.chat_container.setStyleSheet(
-            f"background-color: {DARK_BACKGROUND};")
+        self.chat_container.setStyleSheet(f"background-color: {DARK_BACKGROUND};")
         self.chat_layout = QVBoxLayout(self.chat_container)
         self.chat_layout.setContentsMargins(5, 5, 5, 5)
         self.chat_layout.setSpacing(8)
@@ -343,15 +340,15 @@ class ChatWindow(QWidget):
         self.input_field.setFont(QFont("Segoe UI", 10))
         self.input_field.setStyleSheet(f"""
             QLineEdit {{
-                background-color: {DARK_WIDGET_BACKGROUND};
+                background-color: {DARK_WIDGET_BACKGROUND}; 
                 color: {TEXT_COLOR};
-                border-radius: {BORDER_RADIUS}px;
+                border-radius: {BORDER_RADIUS}px; 
                 border: 1px solid #444444;
-                padding: 8px 12px;
+                padding: 8px 12px; 
                 min-height: 25px;
             }}
-            QLineEdit:focus {{
-                border: 1px solid {ACCENT_COLOR};
+            QLineEdit:focus {{ 
+                border: 1px solid {ACCENT_COLOR}; 
             }}
         """)
         self.input_field.returnPressed.connect(self.send_message)
@@ -364,18 +361,18 @@ class ChatWindow(QWidget):
         self.send_button.setCursor(Qt.PointingHandCursor)
         self.send_button.setStyleSheet(f"""
             QPushButton {{
-                background-color: {ACCENT_COLOR};
+                background-color: {ACCENT_COLOR}; 
                 color: {TEXT_COLOR};
-                border-radius: {BORDER_RADIUS}px;
+                border-radius: {BORDER_RADIUS}px; 
                 padding: 8px 15px;
-                border: none;
+                border: none; 
                 min-height: 25px;
             }}
-            QPushButton:hover {{
-                background-color: #0369a1;
+            QPushButton:hover {{ 
+                background-color: #0369a1; 
             }}
-            QPushButton:pressed {{
-                background-color: #075985;
+            QPushButton:pressed {{ 
+                background-color: #075985; 
             }}
         """)
         self.send_button.clicked.connect(self.send_message)
