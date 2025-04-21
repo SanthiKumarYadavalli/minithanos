@@ -1,9 +1,8 @@
-import sys
 import random
-import time
 from agents.god import do
-# Replace keyboard import with pynput
 from pynput import keyboard
+import asyncio
+from qasync import QEventLoop  # Import QEventLoop for asyncio integration with PyQt
 
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QLineEdit,
@@ -427,8 +426,23 @@ class ChatWindow(QWidget):
         self.add_message(user_text, is_user=True)
         self.input_field.clear()
         self.start_typing_indicator()
-        QTimer.singleShot(random.randint(800, 2000),
-                          lambda: self.ai_response(user_text))
+        # Schedule the AI response asynchronously
+        asyncio.ensure_future(self.handle_ai_response(user_text))
+
+    async def handle_ai_response(self, user_text):
+        await self.ai_response(user_text)
+
+    async def ai_response(self, user_text):
+        response = await self.generate_ai_response(user_text)
+        self.add_message(response, is_user=False)
+        self.stop_typing_indicator()
+        self.scroll_to_bottom()
+
+        # Make sure the input field has focus after AI responds
+        self.input_field.setFocus()
+
+    async def generate_ai_response(self, prompt):
+        return await do(prompt)
 
     def start_typing_indicator(self):
         self.typing_dots_count = 0
@@ -444,14 +458,6 @@ class ChatWindow(QWidget):
     def stop_typing_indicator(self):
         self.typing_animation_timer.stop()
         self.typing_indicator.hide()
-
-    def ai_response(self, user_text):
-        self.stop_typing_indicator()
-        response = self.generate_ai_response(user_text)
-        self.add_message(response, is_user=False)
-
-        # Make sure the input field has focus after AI responds
-        self.input_field.setFocus()
 
     def toggle_minimize(self):
         if not self.is_minimized_to_icon:
@@ -717,5 +723,18 @@ class ChatWindow(QWidget):
         super().showEvent(event)
         QTimer.singleShot(100, self.input_field.setFocus)
 
-    def generate_ai_response(self, prompt):
-        return do(prompt)
+
+# --- Main Application Entry Point ---
+if __name__ == "__main__":
+    import sys
+    from qasync import QEventLoop  # Import QEventLoop for asyncio integration
+
+    app = QApplication(sys.argv)
+    loop = QEventLoop(app)  # Integrate asyncio with PyQt
+    asyncio.set_event_loop(loop)
+
+    window = ChatWindow()
+    window.show()
+
+    with loop:  # Run the event loop
+        sys.exit(loop.run_forever())

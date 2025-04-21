@@ -1,5 +1,6 @@
 from gemini import god_model
 
 
-def do(prompt):
-    return god_model.generate(prompt).text
+async def do(prompt):
+    res = await god_model.generate(prompt)
+    return res.text

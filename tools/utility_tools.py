@@ -51,7 +51,7 @@ def open_file(file_path: str) -> dict:
         
         print(f"Action: Opening file: '{file_path}'")
         update_files_list()
-        run_command(f"start {file_path}")
+        run_command(f"start '{file_path}'")
         return {"result": f"Successfully opened file: {file_path}"}
     except Exception as e:
         print(f"Error opening file '{file_path}': {e}")
@@ -70,7 +70,7 @@ def open_folder(folder_path: str) -> dict:
     """
     try:
         print(f"Action: Opening folder: '{folder_path}'")
-        run_command(f"start {folder_path}")
+        run_command(f"start '{folder_path}'")
         return {"result": f"Successfully opened folder: {folder_path}"}
     except Exception as e:
         print(f"Error opening folder '{folder_path}': {e}")

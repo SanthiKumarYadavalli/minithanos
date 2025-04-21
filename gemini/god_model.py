@@ -2,6 +2,7 @@ from .client import client
 from google.genai import types
 from all_tools import FUNCTIONS
 from utils import get_files_list
+import asyncio
 
 base_prompt = """
 You are an all-powerful assistant with access to a wide range of tools. Use them skillfully.
@@ -29,14 +30,30 @@ generate_content_config = types.GenerateContentConfig(
     tools=list(FUNCTIONS.values()),
 )
 
-chat = client.chats.create(model=model, config=generate_content_config)
+chat = client.aio.chats.create(model=model, config=generate_content_config)
 files_list = get_files_list()
-chat.send_message(message=base_prompt + "\n\n Here's my filesystem:\n" + get_files_list())
+file = client.files.upload(file="files.txt")
+asyncio.run(chat.send_message(message=[
+    base_prompt,
+    types.Part.from_uri(           
+                file_uri=file.uri,
+                mime_type=file.mime_type,
+    )
+]))
 
 
-def generate(prompt):
+async def generate(prompt):
     global files_list
-    if files_list != get_files_list():
-        files_list = get_files_list()
-        chat.send_message(message="\n\n Here's my filesystem:\n" + get_files_list())
-    return chat.send_message(prompt)
+    new_files_list = get_files_list()
+    file = None
+    if new_files_list != files_list:
+        files_list = new_files_list
+        file = client.files.upload(file="files.txt")
+        return await chat.send_message(message=[
+            prompt,
+            types.Part.from_uri(
+                file_uri=file.uri,
+                mime_type=file.mime_type
+            )
+        ])
+    return await chat.send_message(message=prompt)
