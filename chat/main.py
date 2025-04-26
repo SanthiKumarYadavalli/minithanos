@@ -722,19 +722,3 @@ class ChatWindow(QWidget):
         """Override showEvent to set focus on input field when window shows"""
         super().showEvent(event)
         QTimer.singleShot(100, self.input_field.setFocus)
-
-
-# --- Main Application Entry Point ---
-if __name__ == "__main__":
-    import sys
-    from qasync import QEventLoop  # Import QEventLoop for asyncio integration
-
-    app = QApplication(sys.argv)
-    loop = QEventLoop(app)  # Integrate asyncio with PyQt
-    asyncio.set_event_loop(loop)
-
-    window = ChatWindow()
-    window.show()
-
-    with loop:  # Run the event loop
-        sys.exit(loop.run_forever())

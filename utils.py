@@ -60,6 +60,7 @@ def update_files_list():
 
 
 def get_files_list():
+    update_files_list()
     result = subprocess.run([
         "cat",
         "files.txt"
