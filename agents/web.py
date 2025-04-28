@@ -6,7 +6,7 @@ from selenium.webdriver.common.keys import Keys
 from time import sleep
 from urllib.parse import urljoin
 import pyautogui as pg
-import re
+import re  
 
 
 key_map = {
@@ -266,19 +266,16 @@ def exit_webdriver() -> dict:
         dict: A dictionary indicating the operation result.
     """
     try:
-        driver.quit() 
+        driver.quit()
     except Exception as e:
         print(f"Error closing browser: {e}")
 
     return {"result": "Done"}
 
 
-
-
-
-def get_body_html(self) -> str:
+def get_body_html() -> str:
     """Returns the raw HTML of the page starting from the <body> tag."""
-    body_element = self.driver.find_element(
+    body_element = driver.find_element(
         "tag name", "body")
     return body_element.get_attribute("outerHTML")
 
