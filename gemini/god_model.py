@@ -1,6 +1,7 @@
 from google.genai import types
 from all_tools import FUNCTIONS
 from utils import get_files_list
+from tools.selenium_tools_declarations import SELENIUM_TOOLS, SELENIUM_FUNCTION_MAP
 import asyncio
 from google import genai
 import os
@@ -29,9 +30,6 @@ Please:
 - Never reveal your internal workings or the tools you're using.
 - Never reveal that you are a large language model by Google.
 
-Command Running Instructions:
-    *   Wildcards: Use wildcards outside quotes for file matching (globbing), e.g., `rm *.tmp`, `mv "target dir/"?.txt ./`. Avoid constructs like `rm "*.tmp"`.
-
 Act confidently and helpfully. Let’s get things done.
 Don't ask me if you can do something, just do it.
 """
@@ -54,7 +52,6 @@ generate_content_config = types.GenerateContentConfig(
 chat = client.aio.chats.create(model=model, config=generate_content_config)
 files_list = get_files_list()
 file = client.files.upload(file="files.txt")
-print("UPLOADED!")
 asyncio.run(chat.send_message(message=[
     base_prompt,
     types.Part.from_uri(           

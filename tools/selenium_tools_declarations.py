@@ -144,5 +144,18 @@ SELENIUM_TOOLS = types.Tool(
         type_text_into_element_declaration,
         click_element_by_description_declaration,
         close_browser_declaration,
-    ]
+    ], 
 )
+
+SELENIUM_FUNCTION_MAP = {
+    "launch_browser": launch_browser,
+    "navigate_current_tab": navigate_current_tab,
+    "open_url_in_new_tab": open_url_in_new_tab,
+    "switch_to_tab": switch_to_tab,
+    "close_current_tab": close_current_tab,
+    "scroll_page": scroll_page,
+    "perform_web_search": perform_web_search,
+    "type_text_into_element": type_text_into_element,
+    "click_element_by_description": click_element_by_description,
+    "close_browser": close_browser,
+}

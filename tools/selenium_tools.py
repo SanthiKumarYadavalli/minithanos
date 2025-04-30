@@ -1,4 +1,3 @@
-import google.ai.generativelanguage as glm
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -334,6 +333,7 @@ def click_element_by_description(description: str) -> dict:
     Returns:
         dict: A dictionary confirming the click/navigation action or reporting an error.
     """
+    print(description)
     global driver, last_clicked_xpath
     if driver is None:
         return {"error": "Browser not launched. Call 'launch_browser' first."}
@@ -467,6 +467,16 @@ def close_browser() -> dict:
 
 
 
-
-
+functions = {
+    "launch_browser": launch_browser,
+    "navigate_current_tab": navigate_current_tab,
+    "open_url_in_new_tab": open_url_in_new_tab,
+    "switch_to_tab": switch_to_tab,
+    "close_current_tab": close_current_tab,
+    "scroll_page": scroll_page,
+    "perform_web_search": perform_web_search,
+    "type_text_into_element": type_text_into_element,
+    "click_element_by_description": click_element_by_description,
+    "close_browser": close_browser,
+}
 

@@ -5,6 +5,7 @@ from tools.utility_tools import get_current_datetime, open_apps, open_file, open
 from tools.music_tools import play_song, control_music
 from agents.watcher import look_at_my_screen
 from utils import write_text, write_code
+from tools.selenium_tools import functions
 
 FUNCTIONS = {
     "press_key": press_key,
@@ -28,4 +29,5 @@ FUNCTIONS = {
     "look_at_my_screen": look_at_my_screen,
     "control_music": control_music,    
     "send_message_or_text": send_message_or_text,
+    **functions
 }
