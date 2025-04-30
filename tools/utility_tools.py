@@ -1,6 +1,6 @@
 import pyautogui as pg
 import datetime
-import os
+from time import sleep
 from utils import run_command, update_files_list
 
 def get_current_datetime() -> dict:
@@ -29,7 +29,9 @@ def open_apps(app_name: str) -> dict:
     try:
         print(f"Action: Opening application: '{app_name}'")
         pg.press("win")
+        sleep(0.1)
         pg.write(app_name)
+        sleep(0.1)
         pg.press("enter")
         return {"result": f"Successfully opened application: {app_name}"}
     except Exception as e:

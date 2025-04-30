@@ -1,5 +1,6 @@
 import random
 from agents.god import do
+from utils import press_shortcut
 from pynput import keyboard
 import asyncio
 from qasync import QEventLoop  # Import QEventLoop for asyncio integration with PyQt
@@ -433,6 +434,7 @@ class ChatWindow(QWidget):
         await self.ai_response(user_text)
 
     async def ai_response(self, user_text):
+        press_shortcut(["alt", "tab"])
         response = await self.generate_ai_response(user_text)
         self.add_message(response, is_user=False)
         self.stop_typing_indicator()
@@ -440,6 +442,8 @@ class ChatWindow(QWidget):
 
         # Make sure the input field has focus after AI responds
         self.input_field.setFocus()
+        # press_shortcut(["alt", "tab"])
+
 
     async def generate_ai_response(self, prompt):
         return await do(prompt)

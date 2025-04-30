@@ -23,10 +23,8 @@ def write_text(text: str) -> dict:
     Args:
         text (str): the text to type
     """
-    print("WRITER called!")
     pyperclip.copy(text)
     pg.hotkey("ctrl", "v")
-    pg.press("enter")
     return {"message": "done"}
 
 

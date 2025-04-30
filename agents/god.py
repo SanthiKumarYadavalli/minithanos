@@ -6,4 +6,5 @@ async def do(prompt):
         res = await god_model.generate(prompt)
         return res.text
     except Exception as e:
-        return str(e)
+        print(f"Error occurred: {e}")
+        return await do(prompt)

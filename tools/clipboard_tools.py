@@ -1,4 +1,6 @@
 import pyperclip
+import pyautogui as pg
+
 
 def get_clipboard_text() -> dict:
     """
@@ -31,3 +33,15 @@ def set_clipboard_text(text: str) -> dict:
     except Exception as e:
         print(f"Error setting clipboard content: {e}")
         return {"error": f"Error setting clipboard: {e}"}
+
+
+def get_selected_text():
+    """
+    Copy the selected text, get it from the clipboard.
+
+    Returns:
+        str: The selected text from the clipboard.
+    """
+    pg.hotkey('ctrl', 'c')
+    selected_text = pyperclip.paste()
+    return selected_text

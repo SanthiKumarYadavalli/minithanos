@@ -67,13 +67,29 @@ def take_screenshot() -> dict:
         return {"error": f"Error taking screenshot: {e}"}
 
 
+
 def press_shortcut(keys: str) -> dict:
     """
     presses hotkeys. for example pressing a shortcut.
     Args:
         keys(str): a space separated string of keys (pyautogui keys)
+        example: "ctrl a" or "ctrl alt delete"
     """
     print("Shortcut called", keys)
     pg.hotkey(*keys.split())
+    return {"result": "done"}
+
+
+def send_message_or_text(text: str) -> dict:
+    """
+    Sends a message or types text into the active text field.
+    This is useful for chat applications or any text input field.
+    Args:
+        text (str): the text to type
+    """
+    print("Action: Sending message or text.")
+    pg.write(text, interval=0.1)  # Adjust interval for typing speed
+    pg.press("enter")
+    print(f"Action completed: Typed and sent '{text}'")
     return {"result": "done"}
 
