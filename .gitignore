@@ -8,3 +8,4 @@ zsh.exe.stackdump
 files.txt
 .env
 test.py
+.vscode/
