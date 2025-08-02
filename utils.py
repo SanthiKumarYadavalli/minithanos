@@ -40,6 +40,7 @@ def update_files_list():
         "~/Videos",
         "~/Pictures",
         "~/Music",
+        "~/Develop"
     ]
     skip_files = [
         "*/.git/*",
@@ -47,12 +48,14 @@ def update_files_list():
         "*/__pycache__/*",
         "*/node_modules/*",
         "*/venv/*",
+        "*/.venv/*",
+        "*/.next/*",
     ]
     subprocess.run([
         "find",
         *directories, 
         "-type", "f",
-        *(x for file in skip_files for x in ("-not", "-path", f"\"{file}\"")), 
+        *(x for file in skip_files for x in ("-not", "-path", f"'{file}'")),
         ">", "files.txt"
     ], shell=True)
 
